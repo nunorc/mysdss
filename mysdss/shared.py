@@ -1,0 +1,2 @@
+
+CLASSES = { 'subclass': ['AGN', 'BROADLINE', 'STARBURST', 'STARFORMING'] }
