@@ -1,2 +1,4 @@
 
 CLASSES = { 'subclass': ['AGN', 'BROADLINE', 'STARBURST', 'STARFORMING'] }
+
+SM_FACTOR = 1e9

@@ -4,7 +4,7 @@ import tensorflow as tf
 import numpy as np
 
 from .helper import Helper
-from .shared import CLASSES
+from .shared import CLASSES, SM_FACTOR
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +46,7 @@ class DataGen(tf.keras.utils.Sequence):
             _y, _classes = self.helper.y_list_class(_ids, 'subclass', self.classes['subclass'])
             y['subclass'] = np.array(_y)
         if 'smass' in self.y:
-            y['smass'] = np.array(self.helper.y_list(_ids, 'stellarmass')) / 1e9
+            y['smass'] = np.array(self.helper.y_list(_ids, 'stellarmass')) / SM_FACTOR
 
         return X, y
 
