@@ -45,7 +45,9 @@ class DataGen(tf.keras.utils.Sequence):
         if 'subclass' in self.y:
             _y, _classes = self.helper.y_list_class(_ids, 'subclass', self.classes['subclass'])
             y['subclass'] = np.array(_y)
-        
+        if 'smass' in self.y:
+            y['smass'] = np.array(self.helper.y_list(_ids, 'stellarmass')) / 1e9
+
         return X, y
 
     def __len__(self):

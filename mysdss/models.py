@@ -153,7 +153,78 @@ def b2s(norm):
 
     return model
 
+def i2sm():
+    img = tf.keras.Input(shape=(150, 150, 3), name='img')
+    x = tf.keras.layers.SeparableConv2D(64, (3,3), activation='relu')(img)
+    x = tf.keras.layers.MaxPooling2D(2, 2)(x)
+    x = tf.keras.layers.SeparableConv2D(64, (3,3), activation='relu')(x)
+    x = tf.keras.layers.MaxPooling2D(2, 2)(x)
+    x = tf.keras.layers.SeparableConv2D(128, (3,3), activation='relu')(x)
+    x = tf.keras.layers.MaxPooling2D(2, 2)(x)
+    x = tf.keras.layers.SeparableConv2D(128, (3,3), activation='relu')(x)
+    x = tf.keras.layers.MaxPooling2D(2, 2)(x)
+    x = tf.keras.layers.Flatten()(x)
+    x = tf.keras.layers.Dense(64, activation='relu')(x)
+    x = tf.keras.layers.Dense(32, activation='relu')(x)
+    x = tf.keras.layers.Dense(32, activation='relu')(x)
+    smass = tf.keras.layers.Dense(1, activation='linear', name='smass')(x)
 
+    model = tf.keras.Model(inputs=img, outputs=smass, name='i2sm')
 
+    return model
 
+def f2sm():
+    fits = tf.keras.Input(shape=(61, 61, 5), name='fits')
+    x = tf.keras.layers.SeparableConv2D(64, (3,3), activation='relu')(fits)
+    x = tf.keras.layers.MaxPooling2D(2, 2)(x)
+    x = tf.keras.layers.SeparableConv2D(64, (3,3), activation='relu')(x)
+    x = tf.keras.layers.MaxPooling2D(2, 2)(x)
+    x = tf.keras.layers.SeparableConv2D(128, (3,3), activation='relu')(x)
+    x = tf.keras.layers.MaxPooling2D(2, 2)(x)
+    x = tf.keras.layers.SeparableConv2D(128, (3,3), activation='relu')(x)
+    x = tf.keras.layers.MaxPooling2D(2, 2)(x)
+    x = tf.keras.layers.Flatten()(x)
+    x = tf.keras.layers.Dense(64, activation='relu')(x)
+    x = tf.keras.layers.Dense(32, activation='relu')(x)
+    x = tf.keras.layers.Dense(32, activation='relu')(x)
+    smass = tf.keras.layers.Dense(1, activation='linear', name='smass')(x)
+
+    model = tf.keras.Model(inputs=fits, outputs=smass, name='f2sm')
+
+    return model
+
+def s2sm(norm):
+    spectra = tf.keras.Input(shape=(3522), name='spectra')
+    x = norm(spectra)
+    x = tf.keras.layers.Dense(256, activation='relu')(x)
+    x = tf.keras.layers.Dense(128, activation='relu')(x)
+    x = tf.keras.layers.Dense(32, activation='relu')(x)
+    sm = tf.keras.layers.Dense(1, activation='linear', name='sm')(x)
+
+    model = tf.keras.Model(inputs=spectra, outputs=sm, name='s2sm')
+
+    return model
+
+def ss2sm(norm):
+    ssel = tf.keras.Input(shape=(1423), name='ssel')
+    x = norm(ssel)
+    x = tf.keras.layers.Dense(256, activation='relu')(x)
+    x = tf.keras.layers.Dense(128, activation='relu')(x)
+    x = tf.keras.layers.Dense(32, activation='relu')(x)
+    smass = tf.keras.layers.Dense(1, activation='linear', name='smass')(x)
+
+    model = tf.keras.Model(inputs=ssel, outputs=smass, name='ss2sm')
+
+    return model
+
+def b2sm(norm):
+    bands = tf.keras.Input(shape=(5), name='bands')
+    x = norm(bands)
+    x = tf.keras.layers.Dense(32, activation='relu')(x)
+    x = tf.keras.layers.Dense(32, activation='relu')(x)
+    smass = tf.keras.layers.Dense(1, activation='linear', name='smass')(x)
+
+    model = tf.keras.Model(inputs=bands, outputs=smass, name='b2sm')
+
+    return model
 
