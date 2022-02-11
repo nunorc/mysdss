@@ -38,7 +38,9 @@ class DataGen(tf.keras.utils.Sequence):
             X['ssel'] = self.helper.load_ssels(_ids)
         if 'bands' in self.x:
             X['bands'] = self.helper.load_bands(_ids)
-        
+        if 'wise' in self.x:
+            X['wise'] = self.helper.load_wises(_ids)
+
         y = {}
         if 'redshift' in self.y:
             y['redshift'] = np.array(self.helper.y_list(_ids, 'redshift'))

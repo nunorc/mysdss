@@ -31,8 +31,15 @@ class Helper():
             self.db = self.client['astro']
             self.col = self.db[col]
 
-    def ids_list(self, has_img=False, has_fits=False, has_spectra=False, has_ssel=False, has_bands=False):
-        _ids = [x['_id'] for x in self.col.find({}, { '_id': 1 })]
+    def ids_list(self, has_img=False, has_fits=False, has_spectra=False, has_ssel=False, has_bands=False, has_wise=False):
+        q = {}
+
+        if has_bands:
+            q['bands'] = { '$exists': 1 }
+        if has_wise:
+            q['wise'] = { '$exists': 1 }
+
+        _ids = [x['_id'] for x in self.col.find(q, { '_id': 1 })]
 
         if has_img:
             _ids = [x for x in _ids if self._has_img(x)]
@@ -42,8 +49,6 @@ class Helper():
             _ids = [x for x in _ids if self._has_spectra(x)]
         if has_ssel:
             _ids = [x for x in _ids if self._has_ssel(x)]
-        if has_bands:
-            pass   # have bands for all ids in db
 
         return _ids
 
@@ -150,6 +155,15 @@ class Helper():
             X_bands.append(o['bands'])
 
         return np.array(X_bands)
+
+    def load_wises(self, _ids):
+        X_wise = []
+
+        for i in _ids:
+            o = self.get_obj(i)
+            X_wise.append(o['wise'])
+
+        return np.array(X_wise)
 
     def _frame_url(self, row, band):
         return f"https://dr17.sdss.org/sas/dr17/eboss/photoObj/frames/{ row['rerun'] }/{ row['run'] }/{ row['camcol'] }/frame-{ band }-{ str(row['run']).zfill(6) }-{ row['camcol'] }-{ str(row['field']).zfill(4) }.fits.bz2"
