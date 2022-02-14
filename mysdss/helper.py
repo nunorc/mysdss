@@ -165,8 +165,8 @@ class Helper():
 
         return np.array(X_wise)
 
-    def _frame_url(self, row, band):
-        return f"https://dr17.sdss.org/sas/dr17/eboss/photoObj/frames/{ row['rerun'] }/{ row['run'] }/{ row['camcol'] }/frame-{ band }-{ str(row['run']).zfill(6) }-{ row['camcol'] }-{ str(row['field']).zfill(4) }.fits.bz2"
+    def _frame_url(self, obj, band):
+        return f"https://dr17.sdss.org/sas/dr17/eboss/photoObj/frames/{ obj['rerun'] }/{ obj['run'] }/{ obj['camcol'] }/frame-{ band }-{ str(obj['run']).zfill(6) }-{ obj['camcol'] }-{ str(obj['field']).zfill(4) }.fits.bz2"
 
     def _frame_filename(self, obj, band, DIR='sdss-frames-galaxy', bz=False):
         d = os.path.join(self.FILES, DIR, str(obj['rerun']), str(obj['run']))
