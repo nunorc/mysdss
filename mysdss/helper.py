@@ -108,8 +108,8 @@ class Helper():
     def spectra_url(self, objid):
         obj = self.get_obj(objid)
 
-        #return f"https://dr16.sdss.org/optical/spectrum/view/data/format=csv/spec=lite?plateid={ obj['plate'] }&mjd={ obj['mjd'] }&fiberid={ obj['fiberid'] }"
-        return f"https://dr17.sdss.org/optical/spectrum/view/data/format=csv/spec=lite?plateid={ obj['plate'] }&mjd={ obj['mjd'] }&fiberid={ obj['fiberid'] }"
+        return f"https://dr16.sdss.org/optical/spectrum/view/data/format=csv/spec=lite?plateid={ obj['plate'] }&mjd={ obj['mjd'] }&fiberid={ obj['fiberid'] }"
+        #return f"https://dr17.sdss.org/optical/spectrum/view/data/format=csv/spec=lite?plateid={ obj['plate'] }&mjd={ obj['mjd'] }&fiberid={ obj['fiberid'] }"
 
     def load_imgs(self, _ids):
         X_img = []
@@ -151,13 +151,13 @@ class Helper():
 
         return np.array(X_bands)
 
-    def _frame_url(self, row, band):
-        return f"https://dr17.sdss.org/sas/dr17/eboss/photoObj/frames/{ row['rerun'] }/{ row['run'] }/{ row['camcol'] }/frame-{ band }-{ str(row['run']).zfill(6) }-{ row['camcol'] }-{ str(row['field']).zfill(4) }.fits.bz2"
+    def _frame_url(self, obj, band):
+        return f"https://dr17.sdss.org/sas/dr17/eboss/photoObj/frames/{ obj['rerun'] }/{ obj['run'] }/{ obj['camcol'] }/frame-{ band }-{ str(obj['run']).zfill(6) }-{ obj['camcol'] }-{ str(obj['field']).zfill(4) }.fits.bz2"
 
-    def _frame_filename(self, row, band, DIR='sdss-frames-galaxy', bz=False):
-        d = os.path.join(self.FILES, DIR, str(row['rerun']), str(row['run']))
+    def _frame_filename(self, obj, band, DIR='sdss-frames-galaxy', bz=False):
+        d = os.path.join(self.FILES, DIR, str(obj['rerun']), str(obj['run']))
         os.makedirs(d, exist_ok=True)
-        filename = os.path.join(d, str(row['objID']) + '_' + band + '.fits')
+        filename = os.path.join(d, str(obj['objid']) + '_' + band + '.fits')
         
         if bz:
             filename += '.bz2'
@@ -165,13 +165,13 @@ class Helper():
         return filename
 
     def frames_urls_filenames(self, _id):
-        row = self.get_row(_id)
+        obj = self.get_obj(_id)
 
-        if row:
+        if obj:
             r = []
             for b in ['u', 'g', 'r', 'i', 'z']:
-                u = self._frame_url(row, b)
-                f = self._frame_filename(row, b, bz=True)
+                u = self._frame_url(obj, b)
+                f = self._frame_filename(obj, b, bz=True)
 
                 r.append((u, f))
 
