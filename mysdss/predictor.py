@@ -77,9 +77,12 @@ class Predictor:
                 _result['_waves'] = _waves
 
             if 'bands' in self.x:
-                # https://skyserver.sdss.org/dr16/SkyServerWS/SearchTools/SqlSearch?cmd=SELECT%20modelMag_u%20AS%20u,modelMag_g%20AS%20g,modelMag_r%20AS%20r,modelMag_i%20AS%20i,modelMag_z%20AS%20z%20FROM%20SpecPhoto%20WHERE%20objID=1237665429165768709&format=csv
-                _bands = [_row['u'], _row['g'], _row['r'], _row['i'], _row['z']]
-                _input['bands'] = np.array([_bands])
+                _obj = helper.get_obj(objID)
+                _input['bands'] = _obj['bands']
+
+            if 'wise' in self.x:
+                _obj = helper.get_obj(objID)
+                _input['wise'] = _obj['wise']
 
             _output = self.model.predict(_input)
 
@@ -221,8 +224,4 @@ class Predictor:
                 print('Err len', _id)
 
         return self.helper.fits_filename(row['objID'])
-
-
-
-
 

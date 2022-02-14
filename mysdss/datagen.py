@@ -4,7 +4,7 @@ import tensorflow as tf
 import numpy as np
 
 from .helper import Helper
-from .shared import CLASSES
+from .shared import CLASSES, SM_FACTOR
 
 logger = logging.getLogger(__name__)
 
@@ -38,14 +38,18 @@ class DataGen(tf.keras.utils.Sequence):
             X['ssel'] = self.helper.load_ssels(_ids)
         if 'bands' in self.x:
             X['bands'] = self.helper.load_bands(_ids)
-        
+        if 'wise' in self.x:
+            X['wise'] = self.helper.load_wises(_ids)
+
         y = {}
         if 'redshift' in self.y:
             y['redshift'] = np.array(self.helper.y_list(_ids, 'redshift'))
         if 'subclass' in self.y:
             _y, _classes = self.helper.y_list_class(_ids, 'subclass', self.classes['subclass'])
             y['subclass'] = np.array(_y)
-        
+        if 'smass' in self.y:
+            y['smass'] = np.array(self.helper.y_list(_ids, 'stellarmass')) / SM_FACTOR
+
         return X, y
 
     def __len__(self):
