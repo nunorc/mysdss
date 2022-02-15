@@ -3,7 +3,7 @@ import os, random, logging
 import numpy as np
 from pandas import read_csv
 from tqdm import tqdm
-from tensorflow.keras.preprocessing import image as keras
+import tensorflow.keras.preprocessing.image as keras
 import pymongo
 
 logger = logging.getLogger(__name__)
