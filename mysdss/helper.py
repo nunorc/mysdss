@@ -1,12 +1,14 @@
 
 import os, random, logging
 import numpy as np
-import pandas as pd
+from pandas import read_csv
 from tqdm import tqdm
-import tensorflow as tf
+from tensorflow.keras.preprocessing import image as keras
 import pymongo
 
 logger = logging.getLogger(__name__)
+
+from .cache import Cache
 
 def _guess_files(FILES):
     if os.path.exists(FILES):
@@ -23,7 +25,7 @@ def _guess_files(FILES):
 
 
 class Helper():
-    def __init__(self, FILES='../../FILES', mongodb='mongodb://localhost:27017/', col='sdss'):
+    def __init__(self, FILES='../../FILES', mongodb='mongodb://localhost:27017/', col='sdss', cache=True):
         self.FILES = _guess_files(FILES)
         
         if mongodb:
@@ -31,7 +33,19 @@ class Helper():
             self.db = self.client['astro']
             self.col = self.db[col]
 
+        if cache:
+            self.cache = Cache()
+        else:
+            self.cache = None
+
     def ids_list(self, has_img=False, has_fits=False, has_spectra=False, has_ssel=False, has_bands=False, has_wise=False):
+        if self.cache:
+            key = self._ids_list_key(has_img, has_fits, has_spectra, has_ssel, has_bands, has_wise)
+            data = self.cache.get(key)
+
+            if data:
+                return data
+
         q = {}
 
         if has_bands:
@@ -42,7 +56,12 @@ class Helper():
         _ids = [x['_id'] for x in self.col.find(q, { '_id': 1 })]
 
         if has_img:
-            _ids = [x for x in _ids if self._has_img(x)]
+            #_ids = [x for x in _ids if self._has_img(x)]
+            res = []
+            for i in tqdm(_ids):
+                if self._has_img(i):
+                    res.append(i)
+            _ids = res
         if has_fits:
             _ids = [x for x in _ids if self._has_fits(x)]
         if has_spectra:
@@ -50,7 +69,13 @@ class Helper():
         if has_ssel:
             _ids = [x for x in _ids if self._has_ssel(x)]
 
+        if self.cache:
+            self.cache.set(key, _ids)
+
         return _ids
+
+    def _ids_list_key(self, *args):
+        return f'ids_list_{ self.col.name }_' + "_".join([str(x) for x in args])
 
     def _has_img(self, _id):
         return os.path.exists(self.img_filename(_id))
@@ -121,8 +146,8 @@ class Helper():
 
         for i in _ids:
             filename = self.img_filename(i)
-            image = tf.keras.preprocessing.image.load_img(filename)
-            x = tf.keras.preprocessing.image.img_to_array(image)/255
+            img = keras.load_img(filename)
+            x = keras.img_to_array(img)/255
             X_img.append(x)
 
         return np.array(X_img)
@@ -141,7 +166,7 @@ class Helper():
         X_spectra = []
 
         for i in _ids:
-            _df = pd.read_csv(self.spectra_filename(i))
+            _df = read_csv(self.spectra_filename(i))
             x = _df[(_df['Wavelength']>4000.0) & (_df['Wavelength']<9000.0)]['Flux'].to_numpy()
             X_spectra.append(x)
 
@@ -217,7 +242,7 @@ class Helper():
         X_ssel = []
 
         for i in _ids:
-            _df = pd.read_csv(self.ssel_filename(i))
+            _df = read_csv(self.ssel_filename(i))
             x = _df['BestFit'].to_numpy()
             X_ssel.append(x)
 
