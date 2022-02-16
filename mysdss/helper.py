@@ -38,7 +38,7 @@ class Helper():
         else:
             self.cache = None
 
-    def ids_list(self, has_img=False, has_fits=False, has_spectra=False, has_ssel=False, has_bands=False, has_wise=False):
+    def ids_list(self, has_img=False, has_fits=False, has_spectra=False, has_ssel=False, has_bands=False, has_wise=False, has_gz2c=False):
         if self.cache:
             key = self._ids_list_key(has_img, has_fits, has_spectra, has_ssel, has_bands, has_wise)
             data = self.cache.get(key)
@@ -52,16 +52,13 @@ class Helper():
             q['bands'] = { '$exists': 1 }
         if has_wise:
             q['wise'] = { '$exists': 1 }
+        if has_gz2c:
+            q['gz2class'] = { '$exists': 1 }
 
         _ids = [x['_id'] for x in self.col.find(q, { '_id': 1 })]
 
         if has_img:
-            #_ids = [x for x in _ids if self._has_img(x)]
-            res = []
-            for i in tqdm(_ids):
-                if self._has_img(i):
-                    res.append(i)
-            _ids = res
+            _ids = [x for x in _ids if self._has_img(x)]
         if has_fits:
             _ids = [x for x in _ids if self._has_fits(x)]
         if has_spectra:
@@ -108,7 +105,10 @@ class Helper():
         y = []
         for i in ids:
             o = self.get_obj(i)
-            c = o[target]
+            if target == 'gz2c':     # exception for gz2class
+                c = o['gz2class']['s']
+            else:
+                c = o[target]
             tmp = np.zeros(n)
             tmp[classes.index(c)] = 1
             y.append(tmp)

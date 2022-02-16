@@ -49,6 +49,9 @@ class DataGen(tf.keras.utils.Sequence):
             y['subclass'] = np.array(_y)
         if 'smass' in self.y:
             y['smass'] = np.array(self.helper.y_list(_ids, 'stellarmass')) / SM_FACTOR
+        if 'gz2c' in self.y:
+            _y, _classes = self.helper.y_list_class(_ids, 'gz2c', self.classes['gz2c'])
+            y['gz2c'] = np.array(_y)
 
         return X, y
 
