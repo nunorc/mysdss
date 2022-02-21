@@ -40,7 +40,7 @@ class Helper():
 
     def ids_list(self, has_img=False, has_fits=False, has_spectra=False, has_ssel=False, has_bands=False, has_wise=False, has_gz2c=False):
         if self.cache:
-            key = self._ids_list_key(has_img, has_fits, has_spectra, has_ssel, has_bands, has_wise)
+            key = self._ids_list_key(has_img, has_fits, has_spectra, has_ssel, has_bands, has_wise, has_gz2c)
             data = self.cache.get(key)
 
             if data:
@@ -83,10 +83,11 @@ class Helper():
     def _has_spectra(self, _id):
         filename = self.spectra_filename(_id)
         if os.path.exists(filename):
-            _df = pd.read_csv(filename)
-            _x = _df[(_df['Wavelength']>=4000) & (_df['Wavelength']<=9000.0)]['Flux'].to_numpy()
-            if len(_x) == 3522:
-                return True
+            _df = read_csv(filename)
+            if len(_df)>0 and 'Wavelength' in _df.columns and 'BestFit' in _df.columns:
+                _x = _df[(_df['Wavelength']>=4000) & (_df['Wavelength']<=9000.0)]['BestFit'].to_numpy()
+                if len(_x) == 3522:
+                    return True
         else:
             return False
 
