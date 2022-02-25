@@ -1,19 +1,24 @@
 
 import os, datetime
 import tensorflow as tf
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split as sk_train_test_split
 import matplotlib.pyplot as plt
 
 from .datagen import DataGen
 
+def train_test_split(ids):
+    IDs_train, IDs_test = sk_train_test_split(ids, train_size=0.75)
+
+    return IDs_train, IDs_test
+
 def train_val_test_split(ids):
-    IDs_train, IDs_rest = train_test_split(ids, train_size=0.7)
-    IDs_val, IDs_test = train_test_split(IDs_rest, train_size=0.5)
+    IDs_train, IDs_rest = sk_train_test_split(ids, train_size=0.7)
+    IDs_val, IDs_test = sk_train_test_split(IDs_rest, train_size=0.5)
 
     return IDs_train, IDs_val, IDs_test
 
 def build_datagens(ids, x=None, y=None, batch_size=32, helper=None):
-    ids_train, ids_val, ids_test = train_val_test_split(ids)
+    ids_train, ids_val, ids_test = sk_train_test_split(ids)
 
     train_gen = DataGen(ids_train, x=x, y=y, batch_size=batch_size, helper=helper)
     val_gen = DataGen(ids_val, x=x, y=y, batch_size=batch_size, helper=helper)
@@ -65,14 +70,15 @@ def history_fit_plots(name, history):
     plt.savefig(f"imgs/{ name }_plots.png", bbox_inches='tight')
     plt.close(fig)
 
-def my_callbacks(name, path=None, monitor='val_loss', mode='min'):
+def my_callbacks(name, path=None, check_point=True, monitor='val_loss', mode='min', tensor_board=True):
     log_dir = "logs/fit/" + datetime.datetime.now().strftime(name+"-%Y%m%d-%H%M%S")
 
-    my_callbacks = [
-        tf.keras.callbacks.ModelCheckpoint(filepath=os.path.join(path, name),
+    my_callbacks = []
+    if check_point:
+        my_callbacks.append(tf.keras.callbacks.ModelCheckpoint(filepath=os.path.join(path, name),
                                            monitor=monitor, mode=mode,
-                                           save_best_only=True, verbose=1),
-        tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
-    ]
+                                           save_best_only=True, verbose=1))
+    if tensor_board:
+        my_callbacks.append(tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1))
 
     return my_callbacks
