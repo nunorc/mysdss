@@ -229,7 +229,7 @@ def b2sm(norm):
     return model
 
 def w2r(norm):
-    wise = tf.keras.Input(shape=(5), name='wise')
+    wise = tf.keras.Input(shape=(4), name='wise')
     x = norm(wise)
     x = tf.keras.layers.Dense(32, activation='relu')(x)
     x = tf.keras.layers.Dense(32, activation='relu')(x)

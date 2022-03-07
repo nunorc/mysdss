@@ -18,7 +18,7 @@ def train_val_test_split(ids):
     return IDs_train, IDs_val, IDs_test
 
 def build_datagens(ids, x=None, y=None, batch_size=32, helper=None):
-    ids_train, ids_val, ids_test = sk_train_test_split(ids)
+    ids_train, ids_val, ids_test = train_val_test_split(ids)
 
     train_gen = DataGen(ids_train, x=x, y=y, batch_size=batch_size, helper=helper)
     val_gen = DataGen(ids_val, x=x, y=y, batch_size=batch_size, helper=helper)
