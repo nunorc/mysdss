@@ -63,6 +63,26 @@ def i2s():
 
     return model
 
+def i2g():
+    img = tf.keras.Input(shape=(150, 150, 3), name='img')
+    x = tf.keras.layers.SeparableConv2D(64, (3,3), activation='relu')(img)
+    x = tf.keras.layers.MaxPooling2D(2, 2)(x)
+    x = tf.keras.layers.SeparableConv2D(64, (3,3), activation='relu')(x)
+    x = tf.keras.layers.MaxPooling2D(2, 2)(x)
+    x = tf.keras.layers.SeparableConv2D(128, (3,3), activation='relu')(x)
+    x = tf.keras.layers.MaxPooling2D(2, 2)(x)
+    x = tf.keras.layers.SeparableConv2D(128, (3,3), activation='relu')(x)
+    x = tf.keras.layers.MaxPooling2D(2, 2)(x)
+    x = tf.keras.layers.Flatten()(x)
+    x = tf.keras.layers.Dense(64, activation='relu')(x)
+    x = tf.keras.layers.Dense(32, activation='relu')(x)
+    x = tf.keras.layers.Dense(32, activation='relu')(x)
+    gz2c = tf.keras.layers.Dense(len(CLASSES['gz2c']), activation='softmax', name='gz2c')(x)
+
+    model = tf.keras.Model(inputs=img, outputs=gz2c, name='i2g')
+
+    return model
+
 def f2s():
     fits = tf.keras.Input(shape=(61, 61, 5), name='fits')
     x = tf.keras.layers.SeparableConv2D(64, (3,3), activation='relu')(fits)
@@ -80,6 +100,26 @@ def f2s():
     subclass = tf.keras.layers.Dense(len(CLASSES['subclass']), activation='softmax', name='subclass')(x)
 
     model = tf.keras.Model(inputs=fits, outputs=subclass, name='f2s')
+
+    return model
+
+def f2g():
+    fits = tf.keras.Input(shape=(61, 61, 5), name='fits')
+    x = tf.keras.layers.SeparableConv2D(64, (3,3), activation='relu')(fits)
+    x = tf.keras.layers.MaxPooling2D(2, 2)(x)
+    x = tf.keras.layers.SeparableConv2D(64, (3,3), activation='relu')(x)
+    x = tf.keras.layers.MaxPooling2D(2, 2)(x)
+    x = tf.keras.layers.SeparableConv2D(128, (3,3), activation='relu')(x)
+    x = tf.keras.layers.MaxPooling2D(2, 2)(x)
+    x = tf.keras.layers.SeparableConv2D(128, (3,3), activation='relu')(x)
+    x = tf.keras.layers.MaxPooling2D(2, 2)(x)
+    x = tf.keras.layers.Flatten()(x)
+    x = tf.keras.layers.Dense(64, activation='relu')(x)
+    x = tf.keras.layers.Dense(32, activation='relu')(x)
+    x = tf.keras.layers.Dense(32, activation='relu')(x)
+    gz2c = tf.keras.layers.Dense(len(CLASSES['gz2c']), activation='softmax', name='gz2c')(x)
+
+    model = tf.keras.Model(inputs=fits, outputs=gz2c, name='f2g')
 
     return model
 
@@ -119,6 +159,18 @@ def s2s(norm):
 
     return model
 
+def s2g(norm):
+    spectra = tf.keras.Input(shape=(3522), name='spectra')
+    x = norm(spectra)
+    x = tf.keras.layers.Dense(256, activation='relu')(x)
+    x = tf.keras.layers.Dense(128, activation='relu')(x)
+    x = tf.keras.layers.Dense(32, activation='relu')(x)
+    gz2c = tf.keras.layers.Dense(len(CLASSES['gz2c']), activation='softmax', name='gz2c')(x)
+
+    model = tf.keras.Model(inputs=spectra, outputs=gz2c, name='s2g')
+
+    return model
+
 def ss2s(norm):
     ssel = tf.keras.Input(shape=(1423), name='ssel')
     x = norm(ssel)
@@ -128,6 +180,18 @@ def ss2s(norm):
     subclass = tf.keras.layers.Dense(len(CLASSES['subclass']), activation='softmax', name='subclass')(x)
 
     model = tf.keras.Model(inputs=ssel, outputs=subclass, name='ss2s')
+
+    return model
+
+def ss2g(norm):
+    ssel = tf.keras.Input(shape=(1423), name='ssel')
+    x = norm(ssel)
+    x = tf.keras.layers.Dense(256, activation='relu')(x)
+    x = tf.keras.layers.Dense(128, activation='relu')(x)
+    x = tf.keras.layers.Dense(32, activation='relu')(x)
+    gz2c = tf.keras.layers.Dense(len(CLASSES['gz2c']), activation='softmax', name='gz2c')(x)
+
+    model = tf.keras.Model(inputs=ssel, outputs=gz2c, name='ss2g')
 
     return model
 
@@ -150,6 +214,17 @@ def b2s(norm):
     subclass = tf.keras.layers.Dense(len(CLASSES['subclass']), activation='softmax', name='subclass')(x)
 
     model = tf.keras.Model(inputs=bands, outputs=subclass, name='b2s')
+
+    return model
+
+def b2g(norm):
+    bands = tf.keras.Input(shape=(5), name='bands')
+    x = norm(bands)
+    x = tf.keras.layers.Dense(32, activation='relu')(x)
+    x = tf.keras.layers.Dense(32, activation='relu')(x)
+    gz2c = tf.keras.layers.Dense(len(CLASSES['gz2c']), activation='softmax', name='gz2c')(x)
+
+    model = tf.keras.Model(inputs=bands, outputs=gz2c, name='b2g')
 
     return model
 
@@ -249,3 +324,26 @@ def w2sm(norm):
     model = tf.keras.Model(inputs=wise, outputs=smass, name='b2sm')
 
     return model
+
+def w2s(norm):
+    wise = tf.keras.Input(shape=(4), name='wise')
+    x = norm(wise)
+    x = tf.keras.layers.Dense(32, activation='relu')(x)
+    x = tf.keras.layers.Dense(32, activation='relu')(x)
+    subclass = tf.keras.layers.Dense(len(CLASSES['subclass']), activation='softmax', name='subclass')(x)
+
+    model = tf.keras.Model(inputs=wise, outputs=subclass, name='w2s')
+
+    return model
+
+def w2g(norm):
+    wise = tf.keras.Input(shape=(4), name='wise')
+    x = norm(wise)
+    x = tf.keras.layers.Dense(32, activation='relu')(x)
+    x = tf.keras.layers.Dense(32, activation='relu')(x)
+    gz2c = tf.keras.layers.Dense(len(CLASSES['gz2c']), activation='softmax', name='gz2c')(x)
+
+    model = tf.keras.Model(inputs=wise, outputs=gz2c, name='w2g')
+
+    return model
+
