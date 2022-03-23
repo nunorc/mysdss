@@ -274,9 +274,9 @@ def s2sm(norm):
     x = tf.keras.layers.Dense(256, activation='relu')(x)
     x = tf.keras.layers.Dense(128, activation='relu')(x)
     x = tf.keras.layers.Dense(32, activation='relu')(x)
-    sm = tf.keras.layers.Dense(1, activation='linear', name='sm')(x)
+    smass = tf.keras.layers.Dense(1, activation='linear', name='smass')(x)
 
-    model = tf.keras.Model(inputs=spectra, outputs=sm, name='s2sm')
+    model = tf.keras.Model(inputs=spectra, outputs=smass, name='s2sm')
 
     return model
 
