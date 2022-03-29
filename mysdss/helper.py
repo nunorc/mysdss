@@ -57,11 +57,17 @@ class Helper():
                 _x = _df[(_df['Wavelength']>=4000) & (_df['Wavelength']<=9000.0)]['BestFit'].to_numpy()
                 if len(_x) == 3522:
                     return True
-        else:
-            return False
+        return False
 
-    def _has_ssel(self, id):
-        return os.path.exists(self.ssel_filename(id))
+    def _has_ssel(self, _id):
+        filename = self.ssel_filename(_id)
+        if os.path.exists(filename):
+            _df = read_csv(filename)
+            _x = _df['BestFit'].to_numpy()
+            if _x.shape == (1423,):
+                return True
+
+        return False
 
     def img_filename(self, objID, DIR='img'):
         return os.path.join(self.FILES, DIR, str(objID)+'.jpg')
