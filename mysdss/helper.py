@@ -110,13 +110,6 @@ class Helper():
 
         return y, classes
 
-
-    # def spectra_url(self, objid):
-    #     obj = self.get_obj(objid)
-
-    #     return f"https://dr16.sdss.org/optical/spectrum/view/data/format=csv/spec=lite?plateid={ obj['plate'] }&mjd={ obj['mjd'] }&fiberid={ obj['fiberid'] }"
-    #     #return f"https://dr17.sdss.org/optical/spectrum/view/data/format=csv/spec=lite?plateid={ obj['plate'] }&mjd={ obj['mjd'] }&fiberid={ obj['fiberid'] }"
-
     def load_imgs(self, _ids):
         X_img = []
 
@@ -178,6 +171,10 @@ class Helper():
 
         return np.array(X_wise)
 
+    def spectra_url(self, objid):
+        obj = self.get_obj(objid)
+
+        return f"https://dr16.sdss.org/optical/spectrum/view/data/format=csv/spec=lite?plateid={ obj['plate'] }&mjd={ obj['mjd'] }&fiberid={ obj['fiberid'] }"
 
     def _frame_url(self, obj, band):
         return f"https://dr17.sdss.org/sas/dr17/eboss/photoObj/frames/{ obj['rerun'] }/{ obj['run'] }/{ obj['camcol'] }/frame-{ band }-{ str(obj['run']).zfill(6) }-{ obj['camcol'] }-{ str(obj['field']).zfill(4) }.fits.bz2"
@@ -209,6 +206,4 @@ class Helper():
         _ids = self.df['objid'].tolist()
 
         return random.choice(_ids)
-
-
 

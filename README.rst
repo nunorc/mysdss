@@ -4,7 +4,8 @@ mysdss
 
 **Experimental and under development!**
 
-A toolbox for SDSS data.
+A Python companion package to use the `SDSS Galaxy Subset <https://zenodo.org/record/6393488>`_
+with `AstroMLP Models <https://github.com/nunorc/astromlp-models>`_ .
 
 `Repository <https://github.com/nunorc/mysdss>`_ 
 
