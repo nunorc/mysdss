@@ -1,5 +1,5 @@
 
-import os, datetime
+import os, datetime, requests
 import tensorflow as tf
 from sklearn.model_selection import train_test_split as sk_train_test_split
 import matplotlib.pyplot as plt
@@ -82,3 +82,4 @@ def my_callbacks(name, path=None, check_point=True, monitor='val_loss', mode='mi
         my_callbacks.append(tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1))
 
     return my_callbacks
+
