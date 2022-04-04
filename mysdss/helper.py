@@ -6,6 +6,8 @@ from astropy.io import fits
 import tensorflow.keras.preprocessing.image as keras
 from ImageCutter.ImageCutter import FITSImageCutter
 
+from .skyserver import SkyServer
+
 logger = logging.getLogger(__name__)
 
 class Helper:
@@ -21,6 +23,8 @@ class Helper:
             self.df = read_csv(_filename)
         else:
             logger.warn(f'Data file not found: { _filename }')
+
+        self.skyserver = SkyServer()
 
     def ids_list(self, has_img=False, has_fits=False, has_spectra=False, has_ssel=False, has_bands=False, has_wise=False, has_gz2c=False):
         _df = self.df.copy()
