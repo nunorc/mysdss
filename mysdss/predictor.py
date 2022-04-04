@@ -3,7 +3,6 @@ import os, random, requests, time, pathlib, base64, tempfile, io, logging, subpr
 import pandas as pd
 import numpy as np
 import tensorflow as tf
-from tqdm import tqdm
 from ImageCutter.ImageCutter import FITSImageCutter
 from astropy.io import fits
 import matplotlib.pyplot as plt
