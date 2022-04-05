@@ -90,10 +90,10 @@ class Predictor:
             _result['_waves'] = waves.tolist()
 
         if 'bands' in self.x:
-            _input['bands'] = np.array([obj['modelMag_u'], obj['modelMag_g'], obj['modelMag_r'], obj['modelMag_i'], obj['modelMag_z']])
+            _input['bands'] = np.array([[obj['modelMag_u'], obj['modelMag_g'], obj['modelMag_r'], obj['modelMag_i'], obj['modelMag_z']]])
 
         if 'wise' in self.x:
-            _input['wise'] = np.array([obj['w1mag'], obj['w2mag'], obj['w3mag'], obj['w4mag']])
+            _input['wise'] = np.array([[obj['w1mag'], obj['w2mag'], obj['w3mag'], obj['w4mag']]])
 
         _output = self.model.predict(_input)
 
