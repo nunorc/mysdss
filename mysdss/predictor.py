@@ -49,7 +49,7 @@ class Predictor:
         self.tmp_dir = tmp_dir
         pathlib.Path(self.tmp_dir).mkdir(parents=True, exist_ok=True)
 
-    def predict(self, objid):
+    def predict(self, objid, extra=True, return_input=True):
         obj = self.skyserver.get_obj(objid)
         if obj is None:
             return None
@@ -59,19 +59,23 @@ class Predictor:
             filename = os.path.join(self.tmp_dir, str(objid)+'.jpg')
             if self.helper.save_img(obj, filename=filename):
                 _input['img'] =  np.array([self.helper.load_img(filename)])
-                with open(filename, 'rb') as fin:
-                    _result['_img_base64'] = base64.b64encode(fin.read()).decode('utf-8')
+
+                if extra:
+                    with open(filename, 'rb') as fin:
+                        _result['_img_base64'] = base64.b64encode(fin.read()).decode('utf-8')
 
         if 'fits' in self.x:
             filename = os.path.join(self.tmp_dir, f"{ obj['objid'] }.npy")
             data = self.helper.save_fits(obj, filename=filename, base_dir=self.tmp_dir)
-            _result['_fits_base64'] = []
-            with open(filename, 'rb') as fin:
-                _input['fits'] = np.array([data])
-                # FIXME _fits_base64
+            _input['fits'] = np.array([data])
+
+            if extra:
+                _result['_fits_base64'] = []
                 for i in range(5):
-                    plt.imsave(os.path.join(self.tmp_dir, 'band.jpg'), data[:, :, i])
-                    with open(os.path.join(self.tmp_dir, 'band.jpg'), 'rb') as fin:
+                    _tmp_file = f"{ obj['objid'] }_band_{ i }.jpg"
+                    if not os.path.exists(_tmp_file):
+                        plt.imsave(os.path.join(self.tmp_dir, _tmp_file), data[:, :, i])
+                    with open(os.path.join(self.tmp_dir, _tmp_file), 'rb') as fin:
                         _result['_fits_base64'].append(base64.b64encode(fin.read()).decode('utf-8'))
 
         if 'spectra' in self.x:
@@ -79,15 +83,19 @@ class Predictor:
             self.helper.save_spectra(obj, filename=filename)
             spectra, waves = self.helper.load_spectra(filename)
             _input['spectra'] = np.array([spectra])
-            _result['_waves'] = waves.tolist()
+
+            if extra:
+                _result['_waves_spectra'] = waves.tolist()
 
         if 'ssel' in self.x:
             filename = os.path.join(self.tmp_dir, f"{ obj['objid'] }_ssel.csv")
             spectra_filename = os.path.join(self.tmp_dir, f"{ obj['objid'] }_spectra.csv")
             self.helper.save_ssel(obj, filename=filename, spectra_filename=spectra_filename)
-            spectra, waves = self.helper.load_ssel(filename)
-            _input['ssel'] = np.array([spectra])
-            _result['_waves'] = waves.tolist()
+            ssel, waves = self.helper.load_ssel(filename)
+            _input['ssel'] = np.array([ssel])
+
+            if extra:
+                _result['_waves_ssel'] = waves.tolist()
 
         if 'bands' in self.x:
             _input['bands'] = np.array([[obj['modelMag_u'], obj['modelMag_g'], obj['modelMag_r'], obj['modelMag_i'], obj['modelMag_z']]])
@@ -104,11 +112,20 @@ class Predictor:
 
         _result['x'] = self.x
         _result['y'] = self.y
-        _result['input'] = dict([(x, _input[x].tolist()) for x in _input.keys()])
+
+        if return_input:
+            _result['input'] = dict([(x, _input[x].tolist()) for x in _input.keys()])
+
+        # predict output
         if len(self.y) > 1:
-            _result['output'] = [x[0].tolist() for x in _output]
+            _result['output'] = [x.tolist()[0] for x in _output]
+            _result['output'] = [x[0] if len(x)==1 else x for x in _result['output'] ]
         else:
-             _result['output'] = _output[0].tolist()
+            l = _output.tolist()
+            if len(l[0]) == 1:
+                _result['output'] = l[0]
+            else:
+                _result['output'] = l
 
         return _result
 
