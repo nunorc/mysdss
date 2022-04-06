@@ -94,10 +94,10 @@ def history_fit_plots(name, history, base_dir='./model_plots', smoothing=False):
     if 'mean_absolute_error' in history.history:
         mean_absolute_error = history.history['mean_absolute_error']
         if smoothing:
-            mean_absolute_error = _moving_average(mean_squared_error)
+            mean_absolute_error = _moving_average(mean_absolute_error)
         val_mean_absolute_error = history.history['val_mean_absolute_error']
         if smoothing:
-            val_mean_absolute_error = _moving_average(mean_squared_error)
+            val_mean_absolute_error = _moving_average(val_mean_absolute_error)
         plt.subplot(1, 3, curr)
         plt.plot(epochs_range, mean_absolute_error, label='Training MAE')
         plt.plot(epochs_range, val_mean_absolute_error, label='Validation MAE')
