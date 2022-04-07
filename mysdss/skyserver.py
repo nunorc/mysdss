@@ -10,7 +10,7 @@ class SkyServer:
     def _url(self, action):
         return f"{ self.base_url}{ action }"
 
-    def get_obj(self, objid):
+    def get_obj(self, objid, wise=True):
         obj = None
 
         # SpecPhoto data
@@ -21,6 +21,9 @@ class SkyServer:
             data = r.json()
             if len(data) == 2 and 'Rows' in data[0] and len(data[0]['Rows']) == 1:
                 obj = data[0]['Rows'][0]
+
+        if not wise:
+            return obj
 
         # WISE_allsky data
         sql = f"SELECT s.objID, w.w1mag, w.w2mag, w.w3mag, w.w4mag FROM SpecPhoto s JOIN WISE_xmatch x ON x.sdss_objid = s.objID JOIN WISE_allsky w ON x.wise_cntr = w.cntr WHERE s.objID={ str(objid) }"
